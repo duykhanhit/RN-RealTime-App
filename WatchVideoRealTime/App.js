@@ -1,36 +1,24 @@
-import React, {useEffect} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import socketIOClient from 'socket.io-client';
-const BASE_URL = 'http://192.168.0.104:5000/';
+import React from 'react';
+import 'react-native-gesture-handler';
+import {createStore, combineReducers, applyMiddleware} from 'redux';
+import {Provider} from 'react-redux';
+import ReduxThunk from 'redux-thunk';
+
+import authReducer from './store/reducers/auth';
+import HomeNavigator from './navigation/HomeNavigator';
+
+const rootReducer = combineReducers({
+  auth: authReducer,
+});
+
+const store = createStore(rootReducer, applyMiddleware(ReduxThunk));
 
 const App = () => {
-  useEffect(() => {
-    const socket = socketIOClient(BASE_URL);
-    socket.on('connected', data => {
-      console.log(data);
-    });
-
-    return () => socket.disconnect();
-  }, []);
-
   return (
-    <View style={styles.container}>
-      <Text style={styles.noti}>Hello world!</Text>
-    </View>
+    <Provider store={store}>
+      <HomeNavigator />
+    </Provider>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  noti: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: '#2980b9',
-  },
-});
 
 export default App;
